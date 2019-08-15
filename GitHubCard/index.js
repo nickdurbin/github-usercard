@@ -1,5 +1,4 @@
-let data;
-let isOpen;
+let isOpen = false;
 
 const followersArray = ['tetondan', 'dustinmyers', 'justsml', 'luishrd', 'bigknell'];
 
@@ -15,10 +14,12 @@ const container = document.createElement('div');
 // Adding Class and TextContent to Buttons
 container.classList.add('btn-container');
 followersBtn.classList.add('followBtn');
-followersBtn.classList.add('btn')
+followersBtn.classList.add('btn');
+followersBtn.classList.add('button-open');
 followersBtn.textContent = 'Followers';
 groupBtn.classList.add('groupBtn');
-groupBtn.classList.add('btn')
+groupBtn.classList.add('btn');
+groupBtn.classList.add('button-open');
 groupBtn.textContent = 'Small Group';
 
 // Appending Buttons
@@ -60,9 +61,13 @@ button.forEach(item => item.addEventListener('mouseover', (e) => e.currentTarget
 button.forEach(item => item.addEventListener('mouseout', (e) => e.currentTarget.style.transform = 'scale(1.0)'));
 
 // Function to render only one dataset
-// button.forEach((e) => e.addEventListener('click', () => {
-
-// })) 
+button.forEach((e) => e.addEventListener('click', () => {
+  if (button.classList.toggle('button-open')) {
+    isOpen = true;
+  } else {
+    isOpen = false;
+  }
+}));
 
 // EventListener to render followers cards with an Axios request
 let followers = followersBtn.addEventListener('click', () => {
@@ -76,15 +81,14 @@ let followers = followersBtn.addEventListener('click', () => {
     .catch((error) => {
       console.log(error);
     })
-
   })
 })    
     
 // EventListener to render small group cards with an Axios request
-groupBtn.addEventListener('click', () => {
-  smallGroup.forEach((follower) => {
+let group = groupBtn.addEventListener('click', () => {
+  smallGroup.forEach((groupMember) => {
 
-  axios.get(`https://api.github.com/users/${follower}`)
+  axios.get(`https://api.github.com/users/${groupMember}`)
     .then((response) => {
       data = response.data;
       cards.appendChild(githubCard(data));
@@ -92,7 +96,6 @@ groupBtn.addEventListener('click', () => {
     .catch((error) => {
       console.log(error);
     })
-
   })   
 });
 
@@ -110,12 +113,15 @@ function githubCard(item) {
   const followers = document.createElement('p');
   const following = document.createElement('p');
   const bio = document.createElement('p');
+  const graph = document.createElement('div');
 
   // adding the classes to the elements
   card.classList.add('card');
   cardInfo.classList.add('card-info');
   name.classList.add('name');
   userName.classList.add('username');
+  graph.classList.add('calendar');
+  graph.classList.add('calendar-responsive');
 
   // appending the elements
   card.appendChild(image);
@@ -128,8 +134,9 @@ function githubCard(item) {
   cardInfo.appendChild(followers);
   cardInfo.appendChild(following);
   cardInfo.appendChild(bio);
+  card.appendChild(graph);
 
-  // adding textContent and source values to the elemements
+  // adding textContent and source values to the elements
   image.src = item.avatar_url;
   image.textContent = item.image;
   name.textContent = item.name;
@@ -141,6 +148,7 @@ function githubCard(item) {
   followers.textContent = `Followers: ${item.followers}`;
   following.textContent = `Follow: ${item.following}`;
   bio.textContent = item.bio;
+  graph.textContent = GitHubCalendar('.calendar', item.login);
 
   return card;
 }
