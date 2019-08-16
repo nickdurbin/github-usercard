@@ -146,7 +146,7 @@ function githubCard(item) {
   followers.textContent = `Followers: ${item.followers}`;
   following.textContent = `Follow: ${item.following}`;
   bio.textContent = item.bio;
-  graph.textContent = GitHubCalendar('.calendar', item.login);
+  new GitHubCalendar(graph, item.login);
 
   return card;
 }
